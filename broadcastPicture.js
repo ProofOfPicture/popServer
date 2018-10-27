@@ -51,18 +51,8 @@ class Broadcaster {
             // add output w/ address and amount to send
             transactionBuilder.addOutput(wallet.cashAddress, changeAmount);
 
-            console.log(wallet.privateKey);
-
-            let privateKeyWIF = BITBOX.HDNode.toWIF(BITBOX.HDNode.derive(masterHDNode, 0));
-
-            // node of address which is going to spend utxo
-            let hdnode = BITBOX.HDNode.fromXPriv(wallet.privateKey);
-
-            console.log(hdnode);
-            // keypair
+            let hdnode = BITBOX.HDNode.fromXPriv(wallet.exPriv);
             let keyPair = BITBOX.HDNode.toKeyPair(hdnode);
-
-            console.log(keyPair);
 
             // sign w/ HDNode
             let redeemScript = `OP_RETURN ${pictureHash}`;

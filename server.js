@@ -8,7 +8,8 @@ const factory = new WalletFactory();
 const radio = new Broadcaster();
 
 app.use(bodyParser.json());
-app.listen(port, () => console.log(`Listening on port 5000`));
+// console.log that your server is up and running
+app.listen(port, () => console.log(`Listening on port ${port}`));
 
 app.put('/wallet', (req, res) => res.send(factory.createNewWallet()));
 app.put('/broadcast', (req, res) => {
