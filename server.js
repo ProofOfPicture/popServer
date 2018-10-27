@@ -14,6 +14,6 @@ app.listen(port, () => console.log(`Listening on port ${port}`));
 app.put('/wallet', (req, res) => res.send(factory.createNewWallet()));
 app.put('/broadcast', (req, res) => {
     let params = req.body;
-    let wallet = new Wallet(params.private_key, params.cash_address);
-    radio.broadcastPictureHash(params.picture_hash, wallet).then(value => res.send(value));
+    let wallet = new Wallet(params.privateKey, params.cashAddress, params.exPriv);
+    radio.broadcastPictureHash(params.pictureHash, wallet).then(value => res.send(value));
 });
