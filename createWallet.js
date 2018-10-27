@@ -2,7 +2,13 @@ let BITBOXSDK = require('bitbox-sdk/lib/bitbox-sdk').default;
 let BITBOX = new BITBOXSDK();
 
 class Wallet {
+<<<<<<< HEAD
     constructor(privateKey, cashAddress, exPriv) {
+=======
+
+    constructor(privateKey, cashAddress) {
+    constructor(privateKey, cashAddress) {
+>>>>>>> 2ead0d3042cf7b24881cafa95642ec30e035fea9
         this.cashAddress = cashAddress;
         this.privateKey = privateKey;
         this.exPriv = exPriv;
@@ -16,14 +22,20 @@ class Wallet {
             }
         );
     }
+<<<<<<< HEAD
     
     getKeyPair(){      
         let masterHDNode = BITBOX.HDNode.fromXPriv(privateKey);
+=======
+
+    getKeyPair(){
+        let masterHDNode = WalletBuilder.getExistingWallet(this.privateKey);
+>>>>>>> 2ead0d3042cf7b24881cafa95642ec30e035fea9
         return BITBOX.HDNode.toKeyPair(masterHDNode);
     }
 }
 
-class WalletBuilder {
+class WalletFactory {
     createNewWallet() {
         let masterHDNode = this.createMasterHDNode("testnet");
         let publicKey = this.generatePublicKey(masterHDNode);
@@ -52,4 +64,4 @@ class WalletBuilder {
     }
 }
 
-module.exports = {Wallet, WalletBuilder};
+module.exports = { Wallet, WalletFactory};

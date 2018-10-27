@@ -1,9 +1,7 @@
 
 class Broadcaster {
-    constructor() {}
 
-
-    broadcastPictureHash(pictureHash: string, wallet: Wallet) {
+    broadcastPictureHash(pictureHash, wallet) {
         if (!wallet.utxos[0]) {
             throw "No coins found in the wallet.";
         }
