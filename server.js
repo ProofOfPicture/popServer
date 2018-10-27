@@ -1,14 +1,9 @@
 const express = require('express');
+const { WalletBuilder } = require("./createWallet");
 const app = express();
 const port = process.env.PORT || 5000;
 
 // console.log that your server is up and running
 app.listen(port, () => console.log(`Listening on port ${port}`));
 
-// create a GET route
-app.put('/picture', (req, res) => {
-    res.send(
-        {
-            transaction_hash: "this will be a transaction hash"
-        });
-});
+app.put('/wallet', (req, res) => res.send(new WalletBuilder().createWallet()));
