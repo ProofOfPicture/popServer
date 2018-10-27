@@ -49,7 +49,10 @@ class Broadcaster {
             // add output w/ address and amount to send
             transactionBuilder.addOutput(wallet.cashAddress, changeAmount);
 
-            let keyPair = BITBOX.ECPair.fromWIF(wallet.privateKey);
+            let hdnode = BITBOX.HDNode.fromXPriv(wallet.exPriv);
+            let account = BITBOX.HDNode.derivePath(hdnode, "m/44'/145'/0'");
+
+            let keyPair = BITBOX.HDNode.toKeyPair(account);
 
             // sign w/ HDNode
             let redeemScript;
