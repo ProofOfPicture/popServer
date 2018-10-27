@@ -4,9 +4,10 @@ let BITBOXSDK = require('bitbox-sdk/lib/bitbox-sdk').default;
 let BITBOX = new BITBOXSDK();
 
 class Wallet {
-    constructor(masterKey, cashAddress) {
+
+    constructor(keyPair, cashAddress) {
         this.cashAddress = cashAddress;
-        this.masterKey = masterKey;
+        this.keyPair = keyPair;
 
         BITBOX.Address.utxo(cashAddress).then(
             result => {
@@ -15,25 +16,36 @@ class Wallet {
                 }
                 this.utxos = result;
             }
+
         );
     }
 }
 
 class WalletBuilder {
     createWallet() {
+
+        let masterHDNode = this.createMasterHDNode();
+
+        let publicKey = this.generatePublicKey(masterHDNode);
+        let keyPair = this.generateKeyPair(masterHDNode);
+
+        return new Wallet(keyPair, publicKey);
+    }
+
+    createMasterHDNode() {
         let randomBytes = BITBOX.Crypto.randomBytes(32);
         let mnemonic = BITBOX.Mnemonic.fromEntropy(randomBytes);
         let rootSeed = BITBOX.Mnemonic.toSeed(mnemonic);
-        let hdNode = BITBOX.HDNode.fromSeed(rootSeed, "testnet");
-        let masterKey = BITBOX.HDNode.toXPriv(hdNode);
-        let purpose = "44'";
-        let coin = "145'";
-        let path = `m/${purpose}/${coin}/0`;
-        let account = BITBOX.HDNode.derivePath(hdNode, path);
-        let privateKeyWIF = BITBOX.HDNode.toWIF(BITBOX.HDNode.derive(account, 0));
-        let publicKey = BITBOX.ECPair.toCashAddress(BITBOX.ECPair.fromWIF(privateKeyWIF));
+        return BITBOX.HDNode.fromSeed(rootSeed, "testnet");
+    }
 
-        return new Wallet(masterKey, publicKey);
+    generatePublicKey(masterHDNode) {
+        let account = BITBOX.HDNode.derivePath(masterHDNode, "m/44'/145'/0'");
+        return BITBOX.HDNode.toCashAddress(account);
+    }
+
+    generateKeyPair(masterHDNode){        
+        return BITBOX.HDNode.toKeyPair(masterHDNode);
     }
 }
 
