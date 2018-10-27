@@ -5,9 +5,9 @@ let BITBOX = new BITBOXSDK();
 
 class Wallet {
 
-    constructor(keyPair, cashAddress) {
+    constructor(privateKey, cashAddress) {
         this.cashAddress = cashAddress;
-        this.keyPair = keyPair;
+        this.privateKey = privateKey;
 
         BITBOX.Address.utxo(cashAddress).then(
             result => {
@@ -19,9 +19,13 @@ class Wallet {
 
         );
     }
+
+    generateKeyPair(masterHDNode){
+        return BITBOX.HDNode.fromXPriv(this.privateKey);
+    }
 }
 
-class WalletBuilder {
+class WalletFactory {
     createWallet() {
         let masterHDNode = this.createMasterHDNode();
         let publicKey = this.generatePublicKey(masterHDNode);
@@ -40,10 +44,6 @@ class WalletBuilder {
         let account = BITBOX.HDNode.derivePath(masterHDNode, "m/44'/145'/0'");
         return BITBOX.HDNode.toCashAddress(account);
     }
-
-    generateKeyPair(masterHDNode){        
-        return BITBOX.HDNode.toKeyPair(masterHDNode);
-    }
 }
 
-module.exports = {Wallet, WalletBuilder};
+module.exports = { Wallet, WalletFactory};
