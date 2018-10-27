@@ -7,5 +7,5 @@ const port = process.env.PORT || 5000;
 app.listen(port, () => console.log(`Listening on port ${port}`));
 
 app.get('/wallet', (req, res) => res.send({
-    wallet: new WalletBuilder().createNewWallet()
+    wallet: new WalletBuilder().getExistingWallet('tprv8ZgxMBicQKsPeVyafoZewvDJnkza4dCkt9U2FD1xdtcbU3LHcm3vPv1G8siHFDg2FWihV7mGDdugRyAgziy9sTNTrb7YDcxWCoYspMSJMDe')
 }));

@@ -2,9 +2,10 @@ let BITBOXSDK = require('bitbox-sdk/lib/bitbox-sdk').default;
 let BITBOX = new BITBOXSDK();
 
 class Wallet {
-    constructor(privateKey, cashAddress) {
+    constructor(privateKey, cashAddress, exPriv) {
         this.cashAddress = cashAddress;
         this.privateKey = privateKey;
+        this.exPriv = exPriv;
 
         BITBOX.Address.utxo(cashAddress).then(
             result => {
@@ -17,7 +18,7 @@ class Wallet {
     }
     
     getKeyPair(){      
-        let masterHDNode = WalletBuilder.getExistingWallet(this.privateKey);  
+        let masterHDNode = BITBOX.HDNode.fromXPriv(privateKey);
         return BITBOX.HDNode.toKeyPair(masterHDNode);
     }
 }
@@ -27,14 +28,15 @@ class WalletBuilder {
         let masterHDNode = this.createMasterHDNode("testnet");
         let publicKey = this.generatePublicKey(masterHDNode);
         let privateKeyWIF = BITBOX.HDNode.toWIF(BITBOX.HDNode.derive(masterHDNode, 0));
-        return new Wallet(privateKeyWIF, publicKey);
+        let exPriv = BITBOX.HDNode.toXPriv(masterHDNode);
+        return new Wallet(privateKeyWIF, publicKey, exPriv);
     }
 
-    getExistingWallet(privateKeyWIF){
-        let masterHDNode = BITBOX.HDNode.fromXPriv(privateKeyWIF);
+    getExistingWallet(exPriv){ // Has to be extended private key like: xprvxxxxxxxxxx
+        let masterHDNode = BITBOX.HDNode.fromXPriv(exPriv);
         let publicKey = this.generatePublicKey(masterHDNode);
         let privateKeyWIF = BITBOX.HDNode.toWIF(BITBOX.HDNode.derive(masterHDNode, 0));
-        return new Wallet(privateKeyWIF, publicKey);
+        return new Wallet(privateKeyWIF, publicKey, exPriv);
     }
 
     createMasterHDNode(network) { // Network "testnet" for testnet and "bitcoincash" for main net.
