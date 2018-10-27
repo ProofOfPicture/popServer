@@ -28,19 +28,17 @@ class Broadcaster {
             // get byte count to calculate fee. paying 1 sat/byte
             let byteCount = BITBOX.BitcoinCash.getByteCount(
                 {P2PKH: 1},
-                {P2PKH: 1}
+                {P2PKH: 2}
             );
 
             if (originalAmount < byteCount) {
                 return Promise.reject(`Insufficient funds. You need at least ${byteCount} satoshi for the fee`);
             }
 
-            // encode some text as a buffer
-            let buf = Buffer.from(pictureHash, "hex");
             // create array w/ OP_RETURN code and text buffer and encode
             let data = BITBOX.Script.encode([
                 BITBOX.Script.opcodes.OP_RETURN,
-                buf
+                Buffer.from(pictureHash, "hex")
             ]);
 
             transactionBuilder.addOutput(data, 0);
@@ -51,11 +49,10 @@ class Broadcaster {
             // add output w/ address and amount to send
             transactionBuilder.addOutput(wallet.cashAddress, changeAmount);
 
-            let hdnode = BITBOX.HDNode.fromXPriv(wallet.exPriv);
-            let keyPair = BITBOX.HDNode.toKeyPair(hdnode);
+            let keyPair = BITBOX.ECPair.fromWIF(wallet.privateKey);
 
             // sign w/ HDNode
-            let redeemScript = `OP_RETURN ${pictureHash}`;
+            let redeemScript;
             transactionBuilder.sign(
                 0,
                 keyPair,

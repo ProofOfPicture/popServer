@@ -15,6 +15,5 @@ app.put('/wallet', (req, res) => res.send(factory.createNewWallet()));
 app.put('/broadcast', (req, res) => {
     let params = req.body;
     let wallet = new Wallet(params.private_key, params.cash_address);
-    radio.broadcastPictureHash(params.picture_hash, wallet);
-    res.send("ok");
+    radio.broadcastPictureHash(params.picture_hash, wallet).then(value => res.send(value));
 });
