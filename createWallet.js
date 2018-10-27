@@ -4,38 +4,22 @@ let BITBOX = new BITBOXSDK();
 class Wallet {
 
     constructor(privateKey, cashAddress) {
-    constructor(privateKey, cashAddress) {
         this.cashAddress = cashAddress;
         this.privateKey = privateKey;
-
-        BITBOX.Address.utxo(cashAddress).then(
-            result => {
-                if (!result[0]) {
-                    return;
-                }
-                this.utxos = result;
-            }
-        );
-    }
-
-    getKeyPair(){
-        let masterHDNode = WalletBuilder.getExistingWallet(this.privateKey);
-        return BITBOX.HDNode.toKeyPair(masterHDNode);
     }
 }
 
 class WalletFactory {
     createNewWallet() {
-        let masterHDNode = this.createMasterHDNode("testnet");
+        let masterHDNode = this.createMasterHDNode("bitcoincash");
         let publicKey = this.generatePublicKey(masterHDNode);
         let privateKeyWIF = BITBOX.HDNode.toWIF(BITBOX.HDNode.derive(masterHDNode, 0));
         return new Wallet(privateKeyWIF, publicKey);
     }
 
-    getExistingWallet(privateKeyWIF){
+    getExistingWallet(privateKeyWIF) {
         let masterHDNode = BITBOX.HDNode.fromXPriv(privateKeyWIF);
         let publicKey = this.generatePublicKey(masterHDNode);
-        let privateKeyWIF = BITBOX.HDNode.toWIF(BITBOX.HDNode.derive(masterHDNode, 0));
         return new Wallet(privateKeyWIF, publicKey);
     }
 
@@ -52,4 +36,4 @@ class WalletFactory {
     }
 }
 
-module.exports = { Wallet, WalletFactory};
+module.exports = {Wallet, WalletFactory};

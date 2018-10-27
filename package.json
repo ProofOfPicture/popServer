@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/ProofOfPicture/popServer#readme",
   "dependencies": {
+    "body-parser": "^1.18.2",
     "express": "^4.16.3",
     "bitbox-sdk": "2.0.4",
     "coveralls": "^3.0.2",

@@ -1,78 +1,88 @@
+let BITBOXSDK = require('bitbox-sdk/lib/bitbox-sdk').default;
+let BITBOX = new BITBOXSDK();
 
 class Broadcaster {
 
     broadcastPictureHash(pictureHash, wallet) {
-        if (!wallet.utxos[0]) {
-            throw "No coins found in the wallet.";
-        }
+        return BITBOX.Address.utxo(wallet.cashAddress).then(utxos => {
 
-        // instance of transaction builder
-        let transactionBuilder = new BITBOX.TransactionBuilder("testnet");
-        // original amount of satoshis in vin
-        let originalAmount = wallet.utxos[0].satoshis;
-
-        // index of vout
-        let vout = result[0].vout;
-
-        // txid of vout
-        let txid = result[0].txid;
-
-        // add input with txid and index of vout
-        transactionBuilder.addInput(txid, vout);
-
-        // get byte count to calculate fee. paying 1 sat/byte
-        let byteCount = BITBOX.BitcoinCash.getByteCount(
-            { P2PKH: 1 },
-            { P2PKH: 1 }
-        );
-
-        if (originalAmount < byteCount) {
-            throw `Insufficient funds. You need at least ${byteCount} satoshi for the fee`;
-        }
-
-        // amount to send to receiver. It's the original amount - 1 sat/byte for tx size
-        let changeAmount = originalAmount - byteCount;
-
-        // add output w/ address and amount to send
-        transactionBuilder.addOutput(wallet.cashAddress, changeAmount);
-
-        // keypair
-        let keyPair = BITBOX.HDNode.toKeyPair(wallet.masterKey);
-
-        // sign w/ HDNode
-        let redeemScript = `OP_RETURN ${pictureHash}`;
-        transactionBuilder.sign(
-            0,
-            keyPair,
-            redeemScript,
-            transactionBuilder.hashTypes.SIGHASH_ALL,
-            changeAmount
-        );
-
-        // build tx
-        let tx = transactionBuilder.build();
-        // output rawhex
-        let hex = tx.toHex();
-        this.setState({
-            hex: hex
-        });
-
-        // sendRawTransaction to running BCH node
-        BITBOX.RawTransactions.sendRawTransaction(hex).then(
-            result => {
-                this.setState({
-                    txid: result
-                });
-            },
-            err => {
-                console.log(err);
+            if (!utxos || !utxos[0]) {
+                return Promise.reject("No coins found in the wallet.");
             }
-        );
 
-        return {
-            transaction_hash: "something"
-        }
+            // instance of transaction builder
+            let transactionBuilder = new BITBOX.TransactionBuilder;
+
+            // original amount of satoshis in vin
+            let originalAmount = utxos[0].satoshis;
+
+            // index of vout
+            let vout = utxos[0].vout;
+
+            // txid of vout
+            let txid = utxos[0].txid;
+
+            // add input with txid and index of vout
+            transactionBuilder.addInput(txid, vout);
+
+            // get byte count to calculate fee. paying 1 sat/byte
+            let byteCount = BITBOX.BitcoinCash.getByteCount(
+                {P2PKH: 1},
+                {P2PKH: 1}
+            );
+
+            if (originalAmount < byteCount) {
+                return Promise.reject(`Insufficient funds. You need at least ${byteCount} satoshi for the fee`);
+            }
+
+            // encode some text as a buffer
+            let buf = Buffer.from(pictureHash, "hex");
+            // create array w/ OP_RETURN code and text buffer and encode
+            let data = BITBOX.Script.encode([
+                BITBOX.Script.opcodes.OP_RETURN,
+                buf
+            ]);
+
+            transactionBuilder.addOutput(data, 0);
+
+            // amount to send to receiver. It's the original amount - 1 sat/byte for tx size
+            let changeAmount = originalAmount - byteCount;
+
+            // add output w/ address and amount to send
+            transactionBuilder.addOutput(wallet.cashAddress, changeAmount);
+
+            console.log(wallet.privateKey);
+
+            let privateKeyWIF = BITBOX.HDNode.toWIF(BITBOX.HDNode.derive(masterHDNode, 0));
+
+            // node of address which is going to spend utxo
+            let hdnode = BITBOX.HDNode.fromXPriv(wallet.privateKey);
+
+            console.log(hdnode);
+            // keypair
+            let keyPair = BITBOX.HDNode.toKeyPair(hdnode);
+
+            console.log(keyPair);
+
+            // sign w/ HDNode
+            let redeemScript = `OP_RETURN ${pictureHash}`;
+            transactionBuilder.sign(
+                0,
+                keyPair,
+                redeemScript,
+                transactionBuilder.hashTypes.SIGHASH_ALL,
+                originalAmount
+            );
+
+            // build tx
+            let tx = transactionBuilder.build();
+            // output rawhex
+            let hex = tx.toHex();
+
+            // sendRawTransaction to running BCH node
+            return BITBOX.RawTransactions.sendRawTransaction(hex);
+        });
     }
 }
 
-module.exports = { Broadcaster };
+module.exports = {Broadcaster};
