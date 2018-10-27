@@ -1,0 +1,22 @@
+{
+  "name": "popserver",
+  "version": "1.0.0",
+  "description": "Proof Of Picture Server",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ProofOfPicture/popServer.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ProofOfPicture/popServer/issues"
+  },
+  "homepage": "https://github.com/ProofOfPicture/popServer#readme",
+  "dependencies": {
+    "express": "^4.16.3"
+  }
+}
