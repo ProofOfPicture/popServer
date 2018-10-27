@@ -23,13 +23,10 @@ class Wallet {
 
 class WalletBuilder {
     createWallet() {
-
         let masterHDNode = this.createMasterHDNode();
-
         let publicKey = this.generatePublicKey(masterHDNode);
-        let keyPair = this.generateKeyPair(masterHDNode);
-
-        return new Wallet(keyPair, publicKey);
+        let privateKeyWIF = BITBOX.HDNode.toWIF(BITBOX.HDNode.derive(masterHDNode, 0));
+        return new Wallet(privateKeyWIF, publicKey);
     }
 
     createMasterHDNode() {
