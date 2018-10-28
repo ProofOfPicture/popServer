@@ -1,18 +1,18 @@
-const express = require('express');
-const {Wallet, WalletFactory} = require("./createWallet");
-const {Broadcaster} = require("./broadcastPicture");
-const {Validator} = require("./validatePicture");
-const app = express();
-const bodyParser = require('body-parser');
-const port = process.env.PORT || 5000;
-const factory = new WalletFactory();
-const radio = new Broadcaster();
-const validator = new Validator();
+const express = require('express')
+const {Wallet, WalletFactory} = require('./createWallet')
+const {Broadcaster} = require('./broadcastPicture')
+const {Validator} = require('./validatePicture')
+const app = express()
+const bodyParser = require('body-parser')
+const port = process.env.PORT || 5000
+const factory = new WalletFactory()
+const radio = new Broadcaster()
+const validator = new Validator()
 
 app.use(bodyParser.json());
 app.listen(port, () => console.log(`Listening on port ${port}`));
 
-app.put('/wallet', (req, res) => res.send(factory.createNewWallet()));
+app.put('/wallet', (req, res) => res.send(factory.createNewWallet()))
 app.put('/broadcast', (req, res) => {
   console.log(req.body)
   let params = req.body
