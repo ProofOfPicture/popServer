@@ -25,9 +25,6 @@ app.put('/broadcast', (req, res) => {
     })
 })
 app.put('/isValid', (req, res) => {
-  console.log(req)
-  let params = req.body
-  let response1 = Promise.resolve(validator.validatePictureHash(params.pictureHash, params.transactionId))
-  let response = validator.validatePictureHash(params.pictureHash, params.transactionId)
-  res.send(response1)
-})
+    let params = req.body;
+    validator.validatePictureHash(params.pictureHash, params.transactionId).then(value => res.send(value));
+});
