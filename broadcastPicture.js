@@ -26,10 +26,7 @@ class Broadcaster {
             transactionBuilder.addInput(txid, vout);
 
             // get byte count to calculate fee. paying 1 sat/byte
-            let byteCount = BITBOX.BitcoinCash.getByteCount(
-                {P2PKH: 1},
-                {P2PKH: 2}
-            );
+            let byteCount = 468;
 
             if (originalAmount < byteCount) {
                 return Promise.reject(`Insufficient funds. You need at least ${byteCount} satoshi for the fee`);
@@ -41,6 +38,10 @@ class Broadcaster {
                 Buffer.from(pictureHash, "hex")
             ]);
 
+            if (data.length <= 4) {
+                return Promise.reject(`Script blew up: ${data} `);
+            }
+            
             transactionBuilder.addOutput(data, 0);
 
             // amount to send to receiver. It's the original amount - 1 sat/byte for tx size

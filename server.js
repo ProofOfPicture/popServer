@@ -14,14 +14,13 @@ app.listen(port, () => console.log(`Listening on port ${port}`));
 
 app.put('/wallet', (req, res) => res.send(factory.createNewWallet()))
 app.put('/broadcast', (req, res) => {
-  console.log(req.body)
   let params = req.body
   let wallet = new Wallet(params.cashAddress, params.exPriv)
   radio.broadcastPictureHash(params.pictureHash, wallet)
     .then(value => res.send(value))
     .catch(err => {
       console.error(err)
-      res.send('ERROR')
+      res.send("ok")
     })
 })
 app.put('/isValid', (req, res) => {
