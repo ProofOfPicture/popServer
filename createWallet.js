@@ -2,9 +2,8 @@ let BITBOXSDK = require('bitbox-sdk/lib/bitbox-sdk').default;
 let BITBOX = new BITBOXSDK();
 
 class Wallet {
-    constructor(privateKey, cashAddress, exPriv) {
+    constructor(cashAddress, exPriv) {
         this.cashAddress = cashAddress;
-        this.privateKey = privateKey;
         this.exPriv = exPriv;
     }
 }
