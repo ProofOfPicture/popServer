@@ -26,7 +26,7 @@ class Broadcaster {
             transactionBuilder.addInput(txid, vout);
 
             // get byte count to calculate fee. paying 1 sat/byte
-            let byteCount = 468;
+            let byteCount = 1000;
 
             if (originalAmount < byteCount) {
                 return Promise.reject(`Insufficient funds. You need at least ${byteCount} satoshi for the fee`);
