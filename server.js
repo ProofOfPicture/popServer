@@ -20,7 +20,10 @@ app.put('/broadcast', (req, res) => {
   let wallet = new Wallet(params.privateKey, params.cashAddress, params.exPriv)
   radio.broadcastPictureHash(params.pictureHash, wallet)
     .then(value => res.send(value))
-    .catch(err => console.error(err))
+    .catch(err => {
+      console.error(err)
+      res.send('ERROR')
+    })
 })
 app.put('/isValid', (req, res) => {
   console.log(req)
